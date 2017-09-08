@@ -1,7 +1,44 @@
 # 4. closure
 
+## 4-1. closure?
 ```js
 // 4-1-1
+function a() {
+  var x = 1;
+  function b() {
+    console.log(x);
+  }
+  b();
+}
+a();
+console.log(x);
+
+// 변경
+function a() {
+  var x = 1;
+  return function b() {
+    console.log(x);
+  }
+}
+var c = a();
+c();
+
+// 다시 변경
+function a() {
+  var _x = 1;
+  return {
+    get x() { return _x; },
+    set x(v) { _x = v; }
+  }
+}
+var c = a();
+console.log(c.x);
+c.x = 10;
+console.log(c.x);
+```
+
+```js
+// 4-1-2
 function setName(name) {
   return function() {
     return name;
@@ -12,7 +49,7 @@ sayMyName();
 ```
 
 ```js
-// 4-1-2
+// 4-1-3
 function setCounter() {
   var count = 0;
   return function() {
@@ -23,71 +60,67 @@ var count = setCounter();
 count();
 ```
 
-```js
-// 4-1-3
-for(var i = 0; i < 10; i++) {
-  setTimeout(function() {
-    console.log(i);
-  }, 200 * i);
-}
-
-// 수정본
-
-for(var i = 0; i < 10; i++) {
-  (function(i){
-    setTimeout(function() {
-      console.log(i);
-    }, 200 * i);
-  })(i);
-}
-```
-
-
-```html
-<style>
-#a, #b {
-  margin: 10px;
-  height: 0;
-  padding: 20px;
-  overflow: hidden;
-  background-color: #ccc;
-}
-#a.open, #b.show {
-  height: auto;
-}
-</style>
-
-<div id="a">
-  <p>I'm #a</p>
-</div>
-<div id="b">
-  <p>I'm #b</p>
-</div>
-```
+## 4-2. closure로 private member 만들기
 
 ```js
-function makeToggleClass(cls) {
-  return function(e) {
-    var classList = e.currentTarget.className
-      ? e.currentTarget.className.split(' ')
-      : [];
-    var targetIndex = classList.findIndex(function(v){
-      return v === cls
-    });
-    if(targetIndex >= 0) {
-      classList.splice(targetIndex, 1);
-    } else {
-      classList.push(cls);
+// 4-2-1
+var car = {
+  fuel: 10, // 연료 (l)
+  power: 2, // 연비 (km / l)
+  total: 0,
+  run: function(km) {
+    var wasteFuel = km / this.power;
+    if(this.fuel < wasteFuel) {
+      console.log('이동 불가');
+      return;
     }
-    e.currentTarget.className = classList.join(' ');
+    this.fuel -= wasteFuel;
+    this.total += km;
   }
-}
+};
 
-var openToggle = makeToggleClass('open');
-var showToggle = makeToggleClass('show');
-
-document.getElementById('a').addEventListener('click', openToggle);
-document.getElementById('b').addEventListener('click', showToggle);
+// 변경후
+var createCar = function(f, p) {
+  var fuel = f;
+  var power = p;
+  var total = 0;
+  return {
+    run: function(km) {
+      var wasteFuel = km / power;
+      if(fuel < wasteFuel) {
+        console.log('이동 불가');
+        return;
+      }
+      fuel -= wasteFuel;
+      total += km;
+    }
+  }
+};
+var car = createCar(10, 2);
 ```
 
-http://output.jsbin.com/codikekigo/
+```js
+-->
+// 4-2-2
+const Queue = (() => {
+  const ARRAY = Symbol('ARRAY');
+  return class {
+    constructor(...v) {
+      this[ARRAY] = [...v];
+    }
+    push(...v) {
+      return this[ARRAY].push(...v);
+    }
+    pop() {
+      return this[ARRAY].shift();
+    }
+    get length() {
+      return this[ARRAY].length;
+    }
+  }
+})();
+
+const arr = new Queue();
+arr.push(1, 2, 3);
+console.log(arr.pop());
+```

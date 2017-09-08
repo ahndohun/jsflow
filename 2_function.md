@@ -7,11 +7,11 @@
 function sum(a, b) {
   return a + b;
 }
-console.dir(sum);
 
 sum(1, 2);
 
 var res = sum(2, 3);
+
 console.log(res);
 ```
 
@@ -29,25 +29,10 @@ sum(10, 20, 30, 40);
 callFunc();
 ```
 
-## 2-2. 함수선언문과 함수표현식 (function delcaration vs. function expression)
+## 2-2. 호이스팅
 
 ```js
 // 2-2-1
-function a() {
-  return 'a';
-}
-var b = function bb() {
-  return 'bb';
-}
-var c = function() {
-  return 'c';
-}
-```
-
-## 2-3. 호이스팅
-
-```js
-// 2-3-1
 console.log(a());
 console.log(b());
 console.log(c());
@@ -82,6 +67,22 @@ c = function() {
 }
 ```
 
+
+## 2-3-1. 함수선언문과 함수표현식 (function delcaration vs. function expression)
+
+```js
+// 2-3-1
+function a() {
+  return 'a';
+}
+var b = function bb() {
+  return 'bb';
+}
+var c = function() {
+  return 'c';
+}
+```
+
 ```js
 // 2-3-2
 function sum(a, b) {
@@ -111,6 +112,7 @@ var sum = function(a, b) {
 }
 sum(3, 4);
 ```
+
 
 ## 2-4. 함수 스코프, 실행컨텍스트
 
@@ -158,63 +160,32 @@ console.dir(obj.c);
 
 ```js
 // 2-6-1
-var i = 0;
-var timer = setInterval(function() {
-  i = i + 1;
-  if(i > 10) {
-    clearInterval(timer);
-    return;
-  }
-  console.log(i);
-}, 200);
+setInterval(function () {
+  console.log('1초마다 실행될 겁니다.');
+}, 1000);
+```
 
-// -> 변수 분리
-
-var i = 0;
-var callbackFunc = function() {
-  i = i + 1;
-  if(i > 10) {
-    clearInterval(timer);
-    return;
-  }
-  console.log(i);
-}
-var timer = setInterval(callbackFunc, 200);
+```js
+var cb = function() {
+  console.log('1초마다 실행될 겁니다.');
+};
+setInterval(cb, 1000);
 ```
 
 ```js
 // 2-6-2
-var a = 1;
-var b = 2;
-function sum() {
-  return a + b;
-}
+var arr = [1, 2, 3, 4, 5];
+var entries = [];
+arr.forEach(function(v, i) {
+  entries.push([i, v, this[i]]);
+}, [10, 20, 30, 40, 50]);
+console.log(entries);
 
-setTimeout(sum, 300);
-document.getElementById('a').addEventListener('click', sum);
-$('#a').on('click', sum);
+[ [0, 1, 10], [1, 2, 20], [2, 3, 30], [3, 4, 40], [4, 5, 50] ]
 ```
 
 ```js
 // 2-6-3
-var callbacks = {
-  logEachValues: function(v, i) {
-    console.log(i, v);
-  },
-  mapToBeSquare: function(v, i) {
-    return v * (v + i);
-  }
-};
-
-var arr = [1, 2, 3];
-arr.forEach(callbacks.logEachValues);
-
-var res = arr.map(callbacks.mapToBeSquare));
-console.log(res);
-```
-
-```js
-// 2-6-4
 Array.prototype.forEach = function(callback, thisArg) {
   var self = thisArg || this;
   for(var i = 0; i < this.length; i++) {
@@ -222,6 +193,47 @@ Array.prototype.forEach = function(callback, thisArg) {
   }
 }
 ```
+
+```js
+var arr = [1, 2, 3, 4, 5];
+arr.forEach(function(index, value) {
+  console.log(index, value);
+});
+```
+
+
+```js
+// 2-6-4
+document.body.innerHTML = '<div id="a">abc</div>';
+function cbFunc(x) {
+  console.log(this, x);
+}
+document.getElementById('a')
+  .addEventListener('click', cbFunc);
+$('#a').on('click', cbFunc);
+
+<div id="a"></div>
+```
+
+```js
+// 2-6-5
+var arr = [1, 2, 3, 4, 5];
+var obj = {
+  vals: [1, 2, 3],
+  logValues: function(v, i) {
+    if(this.vals) {
+      console.log(this.vals, v, i);
+    } else {
+      console.log(this, v, i);
+    }
+  }
+};
+
+obj.logValues(1, 2);
+arr.forEach(obj.logValues);
+```
+
+
 
 ## 2-7. 생성자함수 (constructor)
 

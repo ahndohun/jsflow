@@ -112,13 +112,12 @@ gomu.__proto__.getAge();
 ## 5-3. prototype chaining
 
 ```js
-
 // 5-3-0
 var arr = [1, 2, 3];
 console.log(arr.toString());
 
 arr.toString = function() {
-  return this.join(',');
+  return this.join('_');
 }
 Array.prototype.toString = function() {
   return '[' + this.join(', ') + ']';
@@ -143,7 +142,6 @@ console.log(obj.toString());
 ```
 
 ```js
-// 5-3-2
 var obj = {
   a: 1,
   b: {
@@ -153,7 +151,7 @@ var obj = {
     var res = [];
   	for(var key in this) {
   		res.push(key + ': ' + this[key].toString());
-      }
+    }
   	return '{' + res.join(', ') + '}';
   }
 };
@@ -178,7 +176,7 @@ console.log(obj.toString());
 ```
 
 ```js
-// 5-3-3
+// 5-3-2
 var obj = {
   a: 1,
   b: {
@@ -187,6 +185,7 @@ var obj = {
   d: [5, 6, 7],
   e: function(){}
 };
+
 Object.prototype.toString = function() {
 	var res = [];
 	for(var key in this) {
@@ -194,8 +193,10 @@ Object.prototype.toString = function() {
     }
 	return '{' + res.join(', ') + '}';
 }
+
 Array.prototype.toString = function() {
   return '[' + this.join(', ') + ']';
 }
+
 console.log(obj.toString());
 ```

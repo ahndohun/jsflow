@@ -133,8 +133,9 @@ Employee.prototype.getPosition = function() {
 }
 
 var gomu = new Employee('고무', 30, 'CEO');
-console.log(gomu.getName(), gomu.getAge(), gomu.getPosition());
+console.dir(gomu);
 
+console.log(gomu.getName(), gomu.getAge(), gomu.getPosition());
 console.log(gomu.__proto__.getName(), gomu.__proto__.getAge(), gomu.__proto__.getPosition());
 ```
 
